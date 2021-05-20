@@ -3,8 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from loader import dp
 from states.new_expense_state import NewExpense
+from keyboards import category_keyboard,currency_keyboard,date_keyboard
 
-main_curr = 'UAH'
 
 @dp.message_handler(Command('expense'), state=None)
 async def process_new_income(message: types.Message):
@@ -14,10 +14,7 @@ async def process_new_income(message: types.Message):
 
 @dp.message_handler(state=NewExpense.sum)
 async def process_income_sum(message: types.Message, state: FSMContext):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
-    markup.add("Food", "Transport", "Education")
-    markup.add("Cigarettes", "Utilities", "Other")
-    await message.answer('Сategory: ', reply_markup=markup)
+    await message.answer('Сategory: ', reply_markup=category_keyboard.category_kb)
     await NewExpense.next()
 
 
@@ -29,17 +26,13 @@ async def process_income_source(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=NewExpense.name)
 async def process_income_source(message: types.Message, state: FSMContext):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
-    markup.add("Today", "Select other")
-    await message.answer('Date: ', reply_markup=markup)
+    await message.answer('Date: ', reply_markup=date_keyboard.date_kb)
     await NewExpense.next()
 
 
 @dp.message_handler(state=NewExpense.date)
 async def process_income_date(message: types.Message, state: FSMContext):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
-    markup.add(f"{main_curr}", "Other")
-    await message.answer(f'Current currency {main_curr}. Change it?', reply_markup=markup)
+    await message.answer(f'Current currency {currency_keyboard.CURRENCY}. Change it?', reply_markup=currency_keyboard.currency_kb)
     await NewExpense.next()
 
 
