@@ -10,6 +10,6 @@ for command in COMMANDS:
     btn = types.inline_keyboard.InlineKeyboardButton(command, callback_data=f'{command}_command')
     commands_kb.insert(btn)
 
-@dp.callback_query_handler(lambda c: re.match(r".*(command)$", c.data))
-async def process_command_btn(callback_query: types.CallbackQuery):
-    print(callback_query.as_json())
+# @dp.callback_query_handler(lambda c: re.match(r".*(command)$", c.data))
+# async def process_command_btn(callback_query: types.CallbackQuery):
+#     # print(callback_query.as_json())

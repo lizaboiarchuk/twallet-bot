@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from loader import dp
 from states.new_expense_state import NewExpense
-from keyboards import category_keyboard,currency_keyboard,date_keyboard
+from keyboards import category_keyboard,currency_keyboard,date_keyboard, commands_keyboard
 
 
 @dp.message_handler(Command('expense'), state=None)
@@ -38,7 +38,7 @@ async def process_income_date(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=NewExpense.currency)
 async def process_income_currency(message: types.Message, state: FSMContext):
-    await message.answer("Expense saved.")
+    await message.answer("Expense saved.", reply_markup=commands_keyboard.commands_kb)
     await state.finish()
 
 

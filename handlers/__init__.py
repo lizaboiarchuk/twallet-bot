@@ -9,3 +9,6 @@ __all__ = ["dp"]
 
 from .statsHandler import dp
 __all__ = ["dp"]
+
+from .historyHandler import dp
+__all__ = ["dp"]

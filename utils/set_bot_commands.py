@@ -7,5 +7,8 @@ async def set_default_commands(dp):
             types.BotCommand("help", "see the manual"),
             types.BotCommand("income", "add new income"),
             types.BotCommand("expense", "add new expense"),
+            types.BotCommand("stats", "get statistics"),
+            types.BotCommand("balance", "check current balance"),
+            types.BotCommand("history", "get history of balance changes"),
         ]
     )
