@@ -1,16 +1,20 @@
 from aiogram import types
 from loader import dp
+import states, handlers
 
-CATEGORIES = ['Food', 'Transport', 'Education', 'Utiliries', 'Tobacco', 'Other']
+CATEGORIES = ['Food', 'Transport', 'Education', 'Utilities', 'Tobacco', 'Other']
 
 category_kb = types.inline_keyboard.InlineKeyboardMarkup(row_width=3)
 for category in CATEGORIES:
-    btn = types.inline_keyboard.InlineKeyboardButton(category, callback_data='process_category_btn')
+    btn = types.inline_keyboard.InlineKeyboardButton(category, callback_data=f'category_{category}')
     category_kb.insert(btn)
 
 
-
-# @dp.callback_query_handler(func=lambda c: c.data == 'process_food_btn')
-# async def process_food_btn(callback_query: types.CallbackQuery):
-#     await callback_query.answer(callback_query.id)
-#     await callback_query.message.answer(callback_query.from_user.id, 'Нажата первая кнопка!')
+@dp.callback_query_handler(lambda c: c.data.startswith('category'), state = states.new_expense_state.NewExpense.category_kb)
+async def process_source_btn(callback_query: types.CallbackQuery):
+    message = callback_query.message
+    if callback_query.data != 'category_Other':
+        message.text = callback_query.data.replace('category_', '')
+    else:
+        message.text = 'Other'
+    await handlers.expenseHandler.expense.process_category_kb(message, state=dp.current_state())

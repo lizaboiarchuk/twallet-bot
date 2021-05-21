@@ -12,7 +12,7 @@ async def process_new_stats(message: types.Message):
     await ShowStats.type.set()
 
 @dp.message_handler(state=ShowStats.type)
-async def process_income_sum(message: types.Message, state: FSMContext):
+async def process_type(message: types.Message, state: FSMContext):
     print(message)
     await message.answer('Your staistics.', reply_markup=commands_keyboard.commands_kb)
     await state.finish()

@@ -4,6 +4,7 @@ class ShowStats(StatesGroup):
     type = State()
 
 class DiagramStats(StatesGroup):
+    kind = State()
     period = State()
 
 class TestStats(StatesGroup):
