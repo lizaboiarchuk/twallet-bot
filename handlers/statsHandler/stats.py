@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from loader import dp
 from states.show_stats_state import ShowStats
-from keyboards import source_keyboard, date_keyboard, currency_keyboard, stats_types_keyboard, commands_keyboard
+from keyboards import stats_types_keyboard, commands_keyboard
 
 
 @dp.message_handler(Command('stats'), state=None)
@@ -14,5 +14,5 @@ async def process_new_stats(message: types.Message):
 @dp.message_handler(state=ShowStats.type)
 async def process_type(message: types.Message, state: FSMContext):
     print(message)
-    await message.answer('Your staistics.', reply_markup=commands_keyboard.commands_kb)
+    await message.answer('Your statistics.', reply_markup=commands_keyboard.commands_kb)
     await state.finish()
