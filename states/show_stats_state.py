@@ -3,12 +3,15 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 class ShowStats(StatesGroup):
     type = State()
 
+
 class DiagramStats(StatesGroup):
-    kind = State()
+    kind = State() #krug/stovp/line
+    period = State()  #w/m/y
+
+
+class TextStats(StatesGroup):
     period = State()
 
-class TestStats(StatesGroup):
-    period = State()
 
 class FileStats(StatesGroup):
     period = State()

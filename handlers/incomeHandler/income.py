@@ -61,7 +61,7 @@ async def process_date_other(message: types.Message, state: FSMContext):
 @dp.message_handler(state=NewIncome.currency_kb)
 async def process_currency_kb(message: types.Message, state: FSMContext):
     if message.text == 'Other':
-        await message.answer("Choose other currency: ")
+        await message.answer("Choose other currency. ")
         await NewIncome.currency_other.set()
     else:
         new_income_obj['Currency'] = currency_keyboard.CURRENCY

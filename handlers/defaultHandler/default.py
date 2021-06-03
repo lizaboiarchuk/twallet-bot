@@ -45,8 +45,7 @@ async def process_balance(message: types.Message):
 @dp.message_handler(Command('cancel'), state='*')
 @dp.message_handler(Text(equals='cancel', ignore_case=True), )
 async def cancel_handler(message: types.Message, state: FSMContext):
-    id = str(message.chat['id'])
-    state_name = (dp.storage.__dict__['data'][id][id]['state'])
+    state_name = await dp.current_state().get_state()
     if state_name in states.new_income_state.NewIncome.all_states_names:
         await message.answer('Income cancelled.', reply_markup=commands_keyboard.commands_kb)
     elif state_name in states.new_expense_state.NewExpense.all_states_names:
