@@ -10,6 +10,7 @@ for command in COMMANDS:
     btn = types.inline_keyboard.InlineKeyboardButton(command, callback_data=f'command_{command}')
     commands_kb.insert(btn)
 
+
 @dp.callback_query_handler(lambda c: c.data.startswith('command'))
 async def process_command_btn(callback_query: types.CallbackQuery):
     if callback_query.data == 'command_Income':

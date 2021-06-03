@@ -1,11 +1,12 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command
+from aiogram.dispatcher.filters import Command, Text
 from loader import dp
 from states.new_expense_state import NewExpense
 from keyboards import category_keyboard,currency_keyboard,date_keyboard, commands_keyboard
 
 new_expense_obj = {}
+
 
 @dp.message_handler(Command('expense'), state=None)
 async def process_new_expense(message: types.Message):

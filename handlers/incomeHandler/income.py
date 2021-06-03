@@ -1,6 +1,7 @@
 from aiogram import types
+from aiogram.contrib.middlewares import logging
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command
+from aiogram.dispatcher.filters import Command, Text
 from loader import dp
 from states.new_income_state import NewIncome
 from keyboards import source_keyboard, date_keyboard, currency_keyboard, commands_keyboard
@@ -77,4 +78,8 @@ async def process_currency_other(message: types.Message, state: FSMContext):
     await state.finish()
     print("NEW INCOME CREATED.")
     print(new_income_obj)
+
+
+
+
 

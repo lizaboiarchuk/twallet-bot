@@ -1,9 +1,12 @@
+from aiogram.dispatcher import FSMContext
+
 from loader import dp
 from aiogram import types
 from aiogram.types import ParseMode
-from aiogram.dispatcher.filters import Command
+from aiogram.dispatcher.filters import Command, Text
 from keyboards import commands_keyboard
 from aiogram.utils.markdown import *
+import states
 
 
 
@@ -35,3 +38,26 @@ async def process_help(message: types.Message):
 async def process_balance(message: types.Message):
     await message.answer(text(bold("Current balance: 0")),
                          reply_markup=commands_keyboard.commands_kb, parse_mode=ParseMode.MARKDOWN)
+
+
+
+
+@dp.message_handler(Command('cancel'), state='*')
+@dp.message_handler(Text(equals='cancel', ignore_case=True), )
+async def cancel_handler(message: types.Message, state: FSMContext):
+    id = str(message.chat['id'])
+    state_name = (dp.storage.__dict__['data'][id][id]['state'])
+    if state_name in states.new_income_state.NewIncome.all_states_names:
+        await message.answer('Income cancelled.', reply_markup=commands_keyboard.commands_kb)
+    elif state_name in states.new_expense_state.NewExpense.all_states_names:
+        await message.answer('Expense cancelled.', reply_markup=commands_keyboard.commands_kb)
+    else:
+        await message.answer('Action cancelled.', reply_markup=commands_keyboard.commands_kb)
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.finish()
+
+
+
+
