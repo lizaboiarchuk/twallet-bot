@@ -18,55 +18,66 @@ async def process_new_stats(message: types.Message):
 
 @dp.message_handler(state=ShowStats.type)
 async def process_type(message: types.Message, state: FSMContext):
-    stats_obj['Type'] = message.text
-    if message.text == 'Chart':
-        await process_chart_kind_kb(message, state)
-        print('chart')
-    elif message.text == '.XLSX':
-        await process_file_period(message, state)
-    elif message.text == 'Text':
-        await process_text_period(message, state)
+    if message.text.lower() in map(lambda x: str(x).lower(), stats_types_keyboard.TYPES):
+        stats_obj['Type'] = message.text.lower()
+        if message.text.lower() == 'chart':
+            await DiagramStats.kind.set()
+            await message.answer("Select kind of chart.", reply_markup=chart_kinds_keyboard.chart_kinds_kb)
+        elif message.text.lower() == '.xlsx':
+            await FileStats.period.set()
+            await message.answer("Select period.", reply_markup=stats_period_keyboard.stats_period_kb)
+        elif message.text.lower() == 'text':
+            await TextStats.period.set()
+            await message.answer("Select period.", reply_markup=stats_period_keyboard.stats_period_kb)
+
+    else:
+        await message.answer('Choose from keyboard.', reply_markup=stats_types_keyboard.st_types_kb)
 
 
 # CHARTS
-async def process_chart_kind_kb(message: types.Message, state: FSMContext):
-    await DiagramStats.kind.set()
-    await message.answer("Select kind of chart.", reply_markup=chart_kinds_keyboard.chart_kinds_kb)
-
-
+@dp.message_handler(state=DiagramStats.kind)
 async def process_chart_kind(message: types.Message, state: FSMContext):
-    stats_obj['Kind'] = message.text
-    await message.answer("Select period.", reply_markup=stats_period_keyboard.stats_period_kb)
-    await DiagramStats.next()
+    if message.text.lower() in map(lambda x: str(x).lower(), chart_kinds_keyboard.KINDS):
+        stats_obj['Kind'] = message.text.lower()
+        await message.answer("Select period.", reply_markup=stats_period_keyboard.stats_period_kb)
+        await DiagramStats.next()
+    else:
+        await message.answer('Choose from keyboard.', reply_markup=chart_kinds_keyboard.chart_kinds_kb)
 
 
+@dp.message_handler(state=DiagramStats.period)
 async def process_chart_period(message: types.Message, state: FSMContext):
-    stats_obj['Period'] = message.text
-    print(stats_obj)
-    # res = create_chart(stats_obj)
-    await create_pie_chart(message, message.text)
-    await state.finish()
-    await message.answer(f"Your {stats_obj['Kind']} for {stats_obj['Period']}",
-                         reply_markup=commands_keyboard.commands_kb)
+    if message.text.lower() in map(lambda x: str(x).lower(), stats_period_keyboard.PERIODS):
+        stats_obj['Period'] = message.text.lower()
+        print(stats_obj)
+        # res = create_chart(stats_obj)
+        await create_pie_chart(message, message.text)
+        await state.finish()
+        await message.answer(f"Your {stats_obj['Kind']} for {stats_obj['Period']}",
+                             reply_markup=commands_keyboard.commands_kb)
+    else:
+        await message.answer('Choose from keyboard.', reply_markup=stats_period_keyboard.stats_period_kb)
+
 
 
 # TEXT
-async def process_text_period(message: types.Message, state: FSMContext):
-    await TextStats.period.set()
-    await message.answer("Select period.", reply_markup=stats_period_keyboard.stats_period_kb)
-
-
+@dp.message_handler(state=TextStats.period)
 async def process_text_result(message: types.Message, state: FSMContext):
-    await state.finish()
-    await message.answer(f"Your text stats for {message.text}.", reply_markup=commands_keyboard.commands_kb)
+    if message.text.lower() in map(lambda x: str(x).lower(), stats_period_keyboard.PERIODS):
+        stats_obj['Period'] = message.text.lower()
+        await state.finish()
+        await message.answer(f"Your text stats for {message.text}.", reply_markup=commands_keyboard.commands_kb)
+    else:
+        await message.answer('Choose from keyboard.', reply_markup=stats_period_keyboard.stats_period_kb)
+
 
 
 # FILE
-async def process_file_period(message: types.Message, state: FSMContext):
-    await FileStats.period.set()
-    await message.answer("Select period.", reply_markup=stats_period_keyboard.stats_period_kb)
-
-
+@dp.message_handler(state=FileStats.period)
 async def process_file_result(message: types.Message, state: FSMContext):
-    await state.finish()
-    await message.answer(f"Your file stats for {message.text}.", reply_markup=commands_keyboard.commands_kb)
+    if message.text.lower() in map(lambda x: str(x).lower(), stats_period_keyboard.PERIODS):
+        stats_obj['Period'] = message.text.lower()
+        await state.finish()
+        await message.answer(f"Your file stats for {message.text}.", reply_markup=commands_keyboard.commands_kb)
+    else:
+        await message.answer('Choose from keyboard.', reply_markup=stats_period_keyboard.stats_period_kb)
