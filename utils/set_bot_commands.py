@@ -10,5 +10,6 @@ async def set_default_commands(dp):
             types.BotCommand("stats", "get statistics"),
             types.BotCommand("balance", "check current balance"),
             types.BotCommand("history", "get history of balance changes"),
+            types.BotCommand("cancel", "cancel current operation")
         ]
     )

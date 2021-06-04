@@ -1,13 +1,13 @@
 from aiogram.dispatcher import FSMContext
-
 from loader import dp
+from config import SERVER_URL
 from aiogram import types
 from aiogram.types import ParseMode
 from aiogram.dispatcher.filters import Command, Text
 from keyboards import commands_keyboard
 from aiogram.utils.markdown import *
 import states
-
+import aiohttp
 
 
 @dp.message_handler(Command('start'))
@@ -21,6 +21,12 @@ async def process_start(message: types.Message):
                          '/stats - show statistics\n'
                          '/history - see the history\n',
                          reply_markup=commands_keyboard.commands_kb)
+    async with aiohttp.ClientSession() as session:
+        data = {}
+        data["id"] = message.chat.id
+        async with session.post(f'{SERVER_URL}/newUser', json=data) as resp:
+            print(resp.status)
+            print(await resp.text())
 
 
 
@@ -36,8 +42,13 @@ async def process_help(message: types.Message):
 
 @dp.message_handler(Command('balance'))
 async def process_balance(message: types.Message):
-    await message.answer(text(bold("Current balance: 0")),
-                         reply_markup=commands_keyboard.commands_kb, parse_mode=ParseMode.MARKDOWN)
+    async with aiohttp.ClientSession() as session:
+        data = {}
+        data["user_id"] = message.chat.id
+        async with session.get(f'{SERVER_URL}/balance', json=data) as resp:
+            balance = await resp.text()
+        await message.answer(f"Current balance: {str(balance)}",
+                             reply_markup=commands_keyboard.commands_kb, parse_mode=ParseMode.MARKDOWN)
 
 
 
