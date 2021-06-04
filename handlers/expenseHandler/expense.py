@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, Text
 from loader import dp
 from states.new_expense_state import NewExpense
-from keyboards import category_keyboard,currency_keyboard,date_keyboard, commands_keyboard
+from keyboards import category_keyboard,currency_keyboard,date_keyboard, commands_keyboard, another_curr_keyboard
 
 new_expense_obj = {}
 
@@ -69,7 +69,7 @@ async def process_date_other(message: types.Message, state: FSMContext):
 @dp.message_handler(state=NewExpense.currency_kb)
 async def process_currency_kb(message: types.Message, state: FSMContext):
     if message.text == 'Other':
-        await message.answer("Choose other currency: ")
+        await message.answer("Choose other currency. ", reply_markup=another_curr_keyboard.other_currencies_kb)
         await NewExpense.currency_other.set()
     else:
         new_expense_obj['Currency'] = currency_keyboard.CURRENCY
