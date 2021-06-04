@@ -17,9 +17,12 @@ async def process_new_expense(message: types.Message):
 
 @dp.message_handler(state=NewExpense.sum)
 async def process_sum(message: types.Message, state: FSMContext):
-    new_expense_obj['Sum'] = message.text
-    await NewExpense.next()
-    await message.answer('Сategory: ', reply_markup=category_keyboard.category_kb)
+    if not str(message.text).replace('.', '', 1).isdigit():
+        await message.answer('Sum has to be a number. Enter sum: ')
+    else:
+        new_expense_obj['Sum'] = float(message.text)
+        await NewExpense.next()
+        await message.answer('Сategory: ', reply_markup=category_keyboard.category_kb)
 
 
 @dp.message_handler(state=NewExpense.category_kb)

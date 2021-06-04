@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters import Command
 from loader import dp
 from states.show_stats_state import *
 from keyboards import stats_types_keyboard, commands_keyboard, stats_period_keyboard, chart_kinds_keyboard
+from creators.charts.pieChartCreator import create_pie_chart
 
 stats_obj = {}
 
@@ -43,6 +44,7 @@ async def process_chart_period(message: types.Message, state: FSMContext):
     stats_obj['Period'] = message.text
     print(stats_obj)
     # res = create_chart(stats_obj)
+    await create_pie_chart(message, message.text)
     await state.finish()
     await message.answer(f"Your {stats_obj['Kind']} for {stats_obj['Period']}",
                          reply_markup=commands_keyboard.commands_kb)
