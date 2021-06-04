@@ -7,7 +7,7 @@ CURRENCIES = [CURRENCY, 'Other']
 
 currency_kb = types.inline_keyboard.InlineKeyboardMarkup(row_width=2)
 for curr in CURRENCIES:
-    btn = types.inline_keyboard.InlineKeyboardButton(curr, callback_data=f'currency_{curr==CURRENCY and "Current" or "Other"}')
+    btn = types.inline_keyboard.InlineKeyboardButton(curr, callback_data=f'currency_{curr}')
     currency_kb.insert(btn)
 
 btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'currency_cancel_button')
@@ -19,10 +19,7 @@ async def process_income_curr(callback_query: types.CallbackQuery):
     if callback_query.data == 'currency_cancel_button':
         await handlers.defaultHandler.default.cancel_handler(message, state=dp.current_state())
         return
-    elif callback_query.data == 'currency_Current':
-        message.text = 'Current'
-    elif callback_query.data == 'currency_Other':
-        message.text = 'Other'
+    message.text = callback_query.data.replace('currency_','')
     await handlers.incomeHandler.income.process_currency_kb(message, state=dp.current_state())
 
 
