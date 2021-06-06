@@ -29,10 +29,7 @@ async def process_expense_curr(callback_query: types.CallbackQuery):
     if callback_query.data == 'currency_cancel_button':
         await handlers.defaultHandler.default.cancel_handler(message, state=dp.current_state())
         return
-    elif callback_query.data == 'currency_Current':
-        message.text = 'Current'
-    elif callback_query.data == 'currency_Other':
-        message.text = 'Other'
+    message.text = callback_query.data.replace('currency_', '')
     await handlers.expenseHandler.expense.process_currency_kb(message, state=dp.current_state())
 
 

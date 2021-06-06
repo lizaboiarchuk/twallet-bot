@@ -3,7 +3,7 @@ from loader import dp
 from states import history_state
 import handlers
 
-PERIODS = ['Day', 'Week', 'Month', 'Year']
+PERIODS = ['Day', 'Week', 'Other']
 
 hist_periods_kb = types.inline_keyboard.InlineKeyboardMarkup(row_width=1)
 for period in PERIODS:

@@ -46,10 +46,9 @@ async def process_balance(message: types.Message):
         data = {}
         data["user_id"] = message.chat.id
         async with session.get(f'{SERVER_URL}/balance', json=data) as resp:
-            balance = await resp.text()
-        await message.answer(f"Current balance: {str(balance)}",
+            res = await resp.json()
+            await message.answer(f"Current balance: {res['balance']}",
                              reply_markup=commands_keyboard.commands_kb, parse_mode=ParseMode.MARKDOWN)
-
 
 
 
