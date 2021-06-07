@@ -61,8 +61,7 @@ async def incomes_history(start_date, end_date, chat_id):
                                                       int(x['date'].split('/')[0])))
     for income in filtered_incomes:
         print(income)
-        result_string += income['date'] + " - " + str(income['sum']) + " " + CURRENCY_NAMES[
-            str(income['currency'])] + " (" + income['name'] + ")" + '\n'
+        result_string += income['date'] + " - " + str(income['sum']) + " " + "UAH" + " (" + income['name'] + ")" + '\n'
     return result_string == "" and "No incomes for this period" or result_string
 
 
@@ -84,32 +83,11 @@ async def outcomes_history(start_date, end_date, chat_id):
                                                        int(x['date'].split('/')[0])))
     for outcome in filtered_outcomes:
         print(outcome)
-        result_string += outcome['date'] + " - " + str(outcome['sum']) + " " + CURRENCY_NAMES[
-            str(outcome['currency'])] + " (" + outcome['category'] + ")" + '\n'
+        result_string += outcome['date'] + " - " + str(outcome['sum']) + " " + "UAH" + " (" + outcome['category'] + ")" + '\n'
     return result_string == "" and "No outcomes for this period" or result_string
 
 
-async def outcomes_history(start_date, end_date, chat_id):
-    dt_range = await date_range(start_date, end_date)
-    async with aiohttp.ClientSession() as session:
-        data = {}
-        data["user_id"] = chat_id
-        async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
-            res = await resp.json()
-    filtered_incomes = []
-    for income in res:
-        inc_date_tokens = income['date'].split('/')
-        inc_date = datetime.date(int(inc_date_tokens[2]), int(inc_date_tokens[1]), int(inc_date_tokens[0]))
-        if inc_date in dt_range:
-            filtered_incomes.append(income)
-    result_string = ""
-    filtered_incomes.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
-                                                      int(x['date'].split('/')[0])))
-    for income in filtered_incomes:
-        print(income)
-        result_string += income['date'] + " - " + str(income['sum']) + " " + CURRENCY_NAMES[
-            str(income['currency'])] + " (" + income['name'] + ")" + '\n'
-    return result_string == "" and "No incomes for this period" or result_string
+
 
 
 async def all_history(start_date, end_date, chat_id):
@@ -133,15 +111,15 @@ async def all_history(start_date, end_date, chat_id):
     result_string = ""
     filtered_items.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
                                                        int(x['date'].split('/')[0])))
+
+    print(filtered_items)
     for it in filtered_items:
         print(it)
 
         if 'category' in it:
-            result_string += "EXPENSE.  " + it['date'] + " - " + str(it['sum']) + " " + CURRENCY_NAMES[
-            str(it['currency'])] + " (" + it['category'] + ")" + '\n'
+            result_string += "EXPENSE.  " + it['date'] + " - " + str(it['sum']) + " " + "UAH" + " (" + it['category'] + ")" + '\n'
         else:
-            result_string += "INCOME.  " + it['date'] + " - " + str(it['sum']) + " " + CURRENCY_NAMES[
-                str(it['currency'])] + " (" + it['name'] + ")" + '\n'
+            result_string += "INCOME.  " + it['date'] + " - " + str(it['sum']) + " " + "UAH" + " (" + it['name'] + ")" + '\n'
     return result_string == "" and "No transactions for this period" or result_string
 
 

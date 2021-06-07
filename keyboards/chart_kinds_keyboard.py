@@ -3,7 +3,7 @@ from loader import dp
 import states
 import handlers
 
-KINDS = ['Pie Chart', 'Column Chart', 'Line Chart']
+KINDS = ['Pie Chart', 'Column Chart']
 
 chart_kinds_kb = types.inline_keyboard.InlineKeyboardMarkup(row_width=1)
 for kind in KINDS:
