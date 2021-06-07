@@ -11,7 +11,7 @@ async def date_range(start, end):
     return days
 
 
-async def get_chart(chart_query: dict, chat_id):
+async def get_text_stats(chart_query: dict, chat_id):
     pass
 
 
