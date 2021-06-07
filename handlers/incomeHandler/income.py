@@ -89,13 +89,9 @@ async def process_currency_kb(message: types.Message, state: FSMContext):
 
         async with aiohttp.ClientSession() as session:
             async with session.post(f'{SERVER_URL}/incomes', json=new_income_obj) as resp:
-                print("inc reqw")
                 print(resp.status)
-                print(await resp.text())
         await message.answer("Income saved.", reply_markup=commands_keyboard.commands_kb)
         await state.finish()
-        print("NEW INCOME CREATED.")
-        print(new_income_obj)
     else:
         await message.answer('Choose from keyboard.', reply_markup=currency_keyboard.currency_kb)
 
@@ -104,13 +100,10 @@ async def process_currency_kb(message: types.Message, state: FSMContext):
 async def process_currency_other(message: types.Message, state: FSMContext):
     if message.text.lower() in map(lambda x: str(x).lower(), another_curr_keyboard.CURRENCIES):
         new_income_obj['currency'] = CURRENCY_CODES[message.text.upper()]
-        print("NEW INCOME CREATED.")
         new_income_obj['user_id'] = message.chat.id
-        print(new_income_obj)
         async with aiohttp.ClientSession() as session:
             async with session.post(f'f{SERVER_URL}/incomes', json=new_income_obj) as resp:
                 print(resp.status)
-                print(await resp.text())
         await message.answer("Income saved.", reply_markup=commands_keyboard.commands_kb)
         await state.finish()
 

@@ -13,7 +13,8 @@ for source in SOURCES:
 btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'source_cancel_button')
 source_kb.insert(btn)
 
-@dp.callback_query_handler(lambda c: c.data.startswith('source'), state = states.new_income_state.NewIncome.source_kb)
+
+@dp.callback_query_handler(lambda c: c.data.startswith('source'), state=states.new_income_state.NewIncome.source_kb)
 async def process_source_btn(callback_query: types.CallbackQuery):
     message = callback_query.message
     if callback_query.data == 'source_cancel_button':
@@ -26,5 +27,3 @@ async def process_source_btn(callback_query: types.CallbackQuery):
     elif callback_query.data == 'source_Other':
         message.text = 'Other'
     await handlers.incomeHandler.income.process_source_kb(message, state=dp.current_state())
-
-

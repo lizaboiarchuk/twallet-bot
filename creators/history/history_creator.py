@@ -2,7 +2,6 @@ import aiohttp
 from config import SERVER_URL
 from datetime import date
 import datetime
-from utils.currency_codes import CURRENCY_NAMES
 
 
 async def date_range(start, end):
@@ -60,7 +59,6 @@ async def incomes_history(start_date, end_date, chat_id):
     filtered_incomes.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
                                                       int(x['date'].split('/')[0])))
     for income in filtered_incomes:
-        print(income)
         result_string += income['date'] + " - " + str(income['sum']) + " " + "UAH" + " (" + income['name'] + ")" + '\n'
     return result_string == "" and "No incomes for this period" or result_string
 
@@ -82,12 +80,9 @@ async def outcomes_history(start_date, end_date, chat_id):
     filtered_outcomes.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
                                                        int(x['date'].split('/')[0])))
     for outcome in filtered_outcomes:
-        print(outcome)
-        result_string += outcome['date'] + " - " + str(outcome['sum']) + " " + "UAH" + " (" + outcome['category'] + ")" + '\n'
+        result_string += outcome['date'] + " - " + str(outcome['sum']) + " " + "UAH" + " (" + outcome[
+            'category'] + ")" + '\n'
     return result_string == "" and "No outcomes for this period" or result_string
-
-
-
 
 
 async def all_history(start_date, end_date, chat_id):
@@ -110,16 +105,14 @@ async def all_history(start_date, end_date, chat_id):
             filtered_items.append(it)
     result_string = ""
     filtered_items.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
-                                                       int(x['date'].split('/')[0])))
+                                                    int(x['date'].split('/')[0])))
 
-    print(filtered_items)
     for it in filtered_items:
-        print(it)
 
         if 'category' in it:
-            result_string += "EXPENSE.  " + it['date'] + " - " + str(it['sum']) + " " + "UAH" + " (" + it['category'] + ")" + '\n'
+            result_string += "EXPENSE.  " + it['date'] + " - " + str(it['sum']) + " " + "UAH" + " (" + it[
+                'category'] + ")" + '\n'
         else:
-            result_string += "INCOME.  " + it['date'] + " - " + str(it['sum']) + " " + "UAH" + " (" + it['name'] + ")" + '\n'
+            result_string += "INCOME.  " + it['date'] + " - " + str(it['sum']) + " " + "UAH" + " (" + it[
+                'name'] + ")" + '\n'
     return result_string == "" and "No transactions for this period" or result_string
-
-

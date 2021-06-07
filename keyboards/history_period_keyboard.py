@@ -14,7 +14,7 @@ btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'hist_
 hist_periods_kb.insert(btn)
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith('hist_period_'), state = history_state.ShowHistory.period)
+@dp.callback_query_handler(lambda c: c.data.startswith('hist_period_'), state=history_state.ShowHistory.period)
 async def process_hist_types(callback_query: types.CallbackQuery):
     message = callback_query.message
     if callback_query.data == 'hist_period_cancel_button':

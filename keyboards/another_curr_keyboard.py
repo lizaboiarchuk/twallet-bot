@@ -14,7 +14,7 @@ btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'other
 other_currencies_kb.insert(btn)
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith('other_curr'), state = '*')
+@dp.callback_query_handler(lambda c: c.data.startswith('other_curr'), state='*')
 async def process_source_btn(callback_query: types.CallbackQuery):
     message = callback_query.message
     if callback_query.data == 'other_curr_cancel_button':
@@ -26,4 +26,3 @@ async def process_source_btn(callback_query: types.CallbackQuery):
         await handlers.incomeHandler.income.process_currency_other(message, state=dp.current_state())
     elif state_name in new_expense_state.NewExpense.all_states_names:
         await handlers.expenseHandler.expense.process_currency_other(message, state=dp.current_state())
-

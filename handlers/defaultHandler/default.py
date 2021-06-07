@@ -5,7 +5,6 @@ from aiogram import types
 from aiogram.types import ParseMode
 from aiogram.dispatcher.filters import Command, Text
 from keyboards import commands_keyboard
-from aiogram.utils.markdown import *
 import states
 import aiohttp
 
@@ -29,7 +28,6 @@ async def process_start(message: types.Message):
             print(await resp.text())
 
 
-
 @dp.message_handler(Command('help'))
 async def process_help(message: types.Message):
     await message.answer('/income - adding new income\n'
@@ -48,8 +46,7 @@ async def process_balance(message: types.Message):
         async with session.get(f'{SERVER_URL}/balance', json=data) as resp:
             res = await resp.json()
             await message.answer(f"Current balance: {float('{:.3f}'.format(res['balance']))} UAH",
-                             reply_markup=commands_keyboard.commands_kb, parse_mode=ParseMode.MARKDOWN)
-
+                                 reply_markup=commands_keyboard.commands_kb, parse_mode=ParseMode.MARKDOWN)
 
 
 @dp.message_handler(Command('cancel'), state='*')
@@ -66,7 +63,3 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     if current_state is None:
         return
     await state.finish()
-
-
-
-

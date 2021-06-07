@@ -5,6 +5,12 @@ from datetime import date
 import datetime
 
 
+async def date_range(start, end):
+    delta = end - start  # as timedelta
+    days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
+    return days
+
+
 async def get_text_stats(chart_query: dict, chat_id):
     if chart_query['Period'].lower() == 'week':
         end_date = date.today()
@@ -35,14 +41,26 @@ async def get_text_stats(chart_query: dict, chat_id):
 
 async def create_history(start_date, end_date, chat_id):
     result_string = ""
+    dt_range = await date_range(start_date, end_date)
     async with aiohttp.ClientSession() as session:
         data = {}
         data["user_id"] = chat_id
         async with session.get(f'{SERVER_URL}/outcomes', json=data) as resp:
-            outcomes = await resp.json()
+            outcomes_all = await resp.json()
         async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
-            incomes = await resp.json()
-
+            incomes_all = await resp.json()
+    incomes = []
+    for income in incomes_all:
+        inc_date_tokens = income['date'].split('/')
+        inc_date = datetime.date(int(inc_date_tokens[2]), int(inc_date_tokens[1]), int(inc_date_tokens[0]))
+        if inc_date in dt_range:
+            incomes.append(income)
+    outcomes = []
+    for outcome in outcomes_all:
+        out_date_tokens = outcome['date'].split('/')
+        out_date = datetime.date(int(out_date_tokens[2]), int(out_date_tokens[1]), int(out_date_tokens[0]))
+        if out_date in dt_range:
+            outcomes.append(outcome)
     incomes_category_dict = dict.fromkeys(set([inc['name'] for inc in incomes]), 0)
     outcomes_category_dict = dict.fromkeys(set([out['category'] for out in outcomes]), 0)
     outcomes_names_dict = dict.fromkeys(set([f"{out['category']}_{out['name']}" for out in outcomes]), 0)
@@ -65,9 +83,8 @@ async def create_history(start_date, end_date, chat_id):
         perc = ("%.2f" % (incomes_category_dict[key] / incomes_total * 100))
         result_string += key + " - " + str(incomes_category_dict[key]) + " UAH (" + perc + "%)\n"
 
-
-    result_string +=  f"\n\nEXPENSES\n"
-    result_string += f"Total = %.2f" % outcomes_total + " UAH.\n\n" \
+    result_string += f"\n\nEXPENSES\n" \
+                     f"Total = %.2f" % outcomes_total + " UAH.\n\n" \
                                                         f"By categories:\n"
     for key in outcomes_category_dict:
         perc = ("%.2f" % (outcomes_category_dict[key] / outcomes_total * 100))
@@ -77,7 +94,6 @@ async def create_history(start_date, end_date, chat_id):
                 name_perc = ("%.2f" % (outcomes_names_dict[name] / outcomes_total * 100))
                 result_string += "\t" + name.replace(f"{key}_", "") + " - " + str(
                     outcomes_names_dict[name]) + " UAH (" + name_perc + "%)\n"
-        result_string+='\n'
-
+        result_string += '\n'
 
     return result_string == "" and "No transactions for this period" or result_string

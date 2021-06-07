@@ -8,9 +8,8 @@ from aiogram.dispatcher.filters import Command
 from aiogram.types import CallbackQuery
 from loader import dp
 from states.new_expense_state import NewExpense
-from keyboards import category_keyboard,currency_keyboard,date_keyboard, commands_keyboard, another_curr_keyboard
+from keyboards import category_keyboard, currency_keyboard, date_keyboard, commands_keyboard, another_curr_keyboard
 from aiogram_calendar import simple_cal_callback, SimpleCalendar
-
 
 new_expense_obj = {}
 
@@ -82,15 +81,12 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
             f'You selected {date.strftime("%d/%m/%Y")}')
         new_expense_obj['date'] = f'{date.strftime("%d/%m/%Y")}'
         await callback_query.message.answer(f'Current currency {currency_keyboard.CURRENCY}. Change it?',
-                             reply_markup=currency_keyboard.currency_kb)
+                                            reply_markup=currency_keyboard.currency_kb)
         await NewExpense.next()
-
 
 
 @dp.message_handler(state=NewExpense.currency_kb)
 async def process_currency_kb(message: types.Message, state: FSMContext):
-    print("Mesage:" + str(message.text.lower()))
-    print("Curr:" + str(currency_keyboard.CURRENCIES[0].lower()))
     if message.text.lower() == 'other':
         await message.answer("Choose other currency. ", reply_markup=another_curr_keyboard.other_currencies_kb)
         await NewExpense.currency_other.set()
@@ -100,9 +96,6 @@ async def process_currency_kb(message: types.Message, state: FSMContext):
         async with aiohttp.ClientSession() as session:
             async with session.post(f'f{SERVER_URL}/outcomes', json=new_expense_obj) as resp:
                 print(resp.status)
-                print(await resp.text())
-        print("NEW EXPENSE CREATED.")
-        print(new_expense_obj)
         await message.answer("Expense saved.", reply_markup=commands_keyboard.commands_kb)
         await state.finish()
     else:
@@ -117,16 +110,7 @@ async def process_currency_other(message: types.Message, state: FSMContext):
         async with aiohttp.ClientSession() as session:
             async with session.post(f'f{SERVER_URL}/outcomes', json=new_expense_obj) as resp:
                 print(resp.status)
-                print(await resp.text())
-        print("NEW EXPENSE CREATED.")
-        print(new_expense_obj)
         await message.answer("Expense saved.", reply_markup=commands_keyboard.commands_kb)
         await state.finish()
     else:
         await message.answer('Choose from keyboard.', reply_markup=another_curr_keyboard.other_currencies_kb)
-
-
-
-
-
-

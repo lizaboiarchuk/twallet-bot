@@ -1,6 +1,5 @@
 from aiogram import types
 from loader import dp
-import re
 import handlers
 
 COMMANDS = ['Income', 'Expense', 'Stats', 'Balance', 'History', 'Help']
@@ -30,4 +29,3 @@ async def process_command_btn(callback_query: types.CallbackQuery):
 
     elif callback_query.data == 'command_Help':
         await handlers.defaultHandler.default.process_help(callback_query.message)
-

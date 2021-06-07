@@ -14,7 +14,7 @@ btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'date_
 date_kb.insert(btn)
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith('date'), state = new_income_state.NewIncome.date_kb)
+@dp.callback_query_handler(lambda c: c.data.startswith('date'), state=new_income_state.NewIncome.date_kb)
 async def process_income_date(callback_query: types.CallbackQuery):
     message = callback_query.message
     if callback_query.data == 'date_cancel_button':
@@ -27,7 +27,7 @@ async def process_income_date(callback_query: types.CallbackQuery):
     await handlers.incomeHandler.income.process_date_kb(message, state=dp.current_state())
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith('date'), state = new_expense_state.NewExpense.date_kb)
+@dp.callback_query_handler(lambda c: c.data.startswith('date'), state=new_expense_state.NewExpense.date_kb)
 async def process_expense_date(callback_query: types.CallbackQuery):
     message = callback_query.message
     if callback_query.data == 'date_cancel_button':

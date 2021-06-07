@@ -12,7 +12,9 @@ for category in CATEGORIES:
 btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'category_cancel_button')
 category_kb.insert(btn)
 
-@dp.callback_query_handler(lambda c: c.data.startswith('category'), state = states.new_expense_state.NewExpense.category_kb)
+
+@dp.callback_query_handler(lambda c: c.data.startswith('category'),
+                           state=states.new_expense_state.NewExpense.category_kb)
 async def process_source_btn(callback_query: types.CallbackQuery):
     message = callback_query.message
 
@@ -24,4 +26,3 @@ async def process_source_btn(callback_query: types.CallbackQuery):
     else:
         message.text = 'Other'
     await handlers.expenseHandler.expense.process_category_kb(message, state=dp.current_state())
-

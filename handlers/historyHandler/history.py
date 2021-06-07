@@ -4,7 +4,6 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from aiogram.types import CallbackQuery
 from loader import dp
-from creators.history import history_creator
 from states.history_state import ShowHistory
 from creators.history import history_creator
 from aiogram_calendar import simple_cal_callback, SimpleCalendar
@@ -44,14 +43,12 @@ async def process_period(message: types.Message, state: FSMContext):
         res = await history_creator.get_history(hist_query, message.chat.id)
         await message.answer(res, reply_markup=commands_keyboard.commands_kb)
         await state.finish()
-        print('\nNEW HISTORY QUERY CREATED.')
     else:
         await message.answer('Choose from keyboard.', reply_markup=history_period_keyboard.hist_periods_kb)
 
 
 @dp.callback_query_handler(simple_cal_callback.filter(), state=ShowHistory.period_start)
 async def process_start_calendar(callback_query: CallbackQuery, callback_data: dict):
-    print('in fisrst calendar')
     selected, date = await SimpleCalendar().process_selection(callback_query, callback_data)
     if selected:
         await callback_query.message.answer(

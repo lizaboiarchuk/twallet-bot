@@ -45,7 +45,6 @@ async def get_chart(chart_query: dict, chat_id):
         await get_gist_chart(start_date, end_date, chat_id)
 
 
-
 async def prepare_data_outcomes(start_date, end_date, chat_id: int):
     dt_range = await date_range(start_date, end_date)
     async with aiohttp.ClientSession() as session:
@@ -72,6 +71,7 @@ async def prepare_data_outcomes(start_date, end_date, chat_id: int):
         if dict_cat[key] == 0:
             dict_cat.pop(key)
     return dict_cat
+
 
 async def prepare_data_incomes(start_date, end_date, chat_id: int):
     dt_range = await date_range(start_date, end_date)
@@ -122,7 +122,6 @@ async def get_pie_chart(start_date, end_date, chat_id: int):
         os.remove(f"outputs/chart_pie_inc_{chat_id}.png")
 
 
-
 async def get_gist_chart(start_date, end_date, chat_id: int):
     dict_cat = await prepare_data_outcomes(start_date, end_date, chat_id)
     fig = go.Figure([go.Bar(x=list(dict_cat.keys()), y=list(dict_cat.values()))])
@@ -141,10 +140,3 @@ async def get_gist_chart(start_date, end_date, chat_id: int):
         os.remove(f"outputs/chart_bar_inc_{chat_id}.png")
     if os.path.exists(f"outputs/chart_bar_{chat_id}.png"):
         os.remove(f"outputs/chart_bar_{chat_id}.png")
-
-
-
-
-
-
-

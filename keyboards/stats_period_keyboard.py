@@ -3,7 +3,6 @@ from loader import dp
 from states import show_stats_state
 import handlers
 
-
 PERIODS = ['Week', 'Month', 'Year']
 
 stats_period_kb = types.inline_keyboard.InlineKeyboardMarkup(row_width=1)
@@ -13,7 +12,6 @@ for period in PERIODS:
 
 btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'stats_period_cancel_button')
 stats_period_kb.insert(btn)
-
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('stats_period_'), state='*')
@@ -33,9 +31,3 @@ async def process_hist_types(callback_query: types.CallbackQuery):
 
     elif state_name in show_stats_state.DiagramStats.all_states_names:
         await handlers.statsHandler.stats.process_chart_period(message, state=dp.current_state())
-
-
-
-
-
-

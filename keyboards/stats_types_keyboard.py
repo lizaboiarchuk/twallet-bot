@@ -13,7 +13,7 @@ btn = types.inline_keyboard.InlineKeyboardButton('Cancel', callback_data=f'proce
 st_types_kb.insert(btn)
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith('process_st_type'), state = states.show_stats_state.ShowStats.type)
+@dp.callback_query_handler(lambda c: c.data.startswith('process_st_type'), state=states.show_stats_state.ShowStats.type)
 async def process_source_btn(callback_query: types.CallbackQuery):
     message = callback_query.message
     if callback_query.data == 'process_st_type_cancel_button':
@@ -22,5 +22,3 @@ async def process_source_btn(callback_query: types.CallbackQuery):
     else:
         message.text = callback_query.data.replace('process_st_type_btn_', '')
         await handlers.statsHandler.stats.process_type(message, state=dp.current_state())
-
-

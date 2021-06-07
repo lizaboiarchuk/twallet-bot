@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
-from loader import dp, bot
+from loader import dp
 from states.show_stats_state import *
 from keyboards import stats_types_keyboard, commands_keyboard, stats_period_keyboard, chart_kinds_keyboard
 from creators.charts.chart_creator import get_chart
@@ -51,14 +51,12 @@ async def process_chart_kind(message: types.Message, state: FSMContext):
 async def process_chart_period(message: types.Message, state: FSMContext):
     if message.text.lower() in map(lambda x: str(x).lower(), stats_period_keyboard.PERIODS):
         stats_obj['Period'] = message.text.lower()
-        print(stats_obj)
         await get_chart(stats_obj, message.chat.id)
         await state.finish()
         await message.answer(f"Your {stats_obj['Kind']} for {stats_obj['Period']}",
                              reply_markup=commands_keyboard.commands_kb)
     else:
         await message.answer('Choose from keyboard.', reply_markup=stats_period_keyboard.stats_period_kb)
-
 
 
 # TEXT
@@ -71,7 +69,6 @@ async def process_text_result(message: types.Message, state: FSMContext):
         await message.answer(res, reply_markup=commands_keyboard.commands_kb)
     else:
         await message.answer('Choose from keyboard.', reply_markup=stats_period_keyboard.stats_period_kb)
-
 
 
 # FILE

@@ -1,11 +1,18 @@
 import calendar
 import aiohttp
+import xlsxwriter
+import os
+from loader import bot
 from config import SERVER_URL
 from datetime import date
 import datetime
-import xlsxwriter
-from loader import bot
-import os
+
+
+async def date_range(start, end):
+    delta = end - start  # as timedelta
+    days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
+    return days
+
 
 async def get_xlsx_stats(chart_query: dict, chat_id):
     if chart_query['Period'].lower() == 'week':
@@ -35,13 +42,26 @@ async def get_xlsx_stats(chart_query: dict, chat_id):
 
 
 async def create_history(start_date, end_date, chat_id):
+    dt_range = await date_range(start_date, end_date)
     async with aiohttp.ClientSession() as session:
         data = {}
         data["user_id"] = chat_id
         async with session.get(f'{SERVER_URL}/outcomes', json=data) as resp:
-            outcomes = await resp.json()
+            outcomes_all = await resp.json()
         async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
-            incomes = await resp.json()
+            incomes_all = await resp.json()
+    incomes = []
+    for income in incomes_all:
+        inc_date_tokens = income['date'].split('/')
+        inc_date = datetime.date(int(inc_date_tokens[2]), int(inc_date_tokens[1]), int(inc_date_tokens[0]))
+        if inc_date in dt_range:
+            incomes.append(income)
+    outcomes = []
+    for outcome in outcomes_all:
+        out_date_tokens = outcome['date'].split('/')
+        out_date = datetime.date(int(out_date_tokens[2]), int(out_date_tokens[1]), int(out_date_tokens[0]))
+        if out_date in dt_range:
+            outcomes.append(outcome)
 
     incomes_category_dict = dict.fromkeys(set([inc['name'] for inc in incomes]), 0)
     outcomes_category_dict = dict.fromkeys(set([out['category'] for out in outcomes]), 0)
@@ -87,15 +107,10 @@ async def create_history(start_date, end_date, chat_id):
                 outcomes_worksheet.write(row, column + 3, f"{name_perc}%")
                 row += 1
     outcomes_worksheet.write(row, column, "TOTAL")
-    outcomes_worksheet.write(row, column + 2, f"%.2f" % incomes_total)
+    outcomes_worksheet.write(row, column + 2, f"%.2f" % outcomes_total)
     workbook.close()
 
     await bot.send_document(chat_id=chat_id, document=open(f'outputs/stats_{chat_id}.xlsx', 'rb'))
 
     if os.path.exists(f"outputs/stats_{chat_id}.xlsx"):
         os.remove(f"outputs/stats_{chat_id}.xlsx")
-
-
-
-
-
