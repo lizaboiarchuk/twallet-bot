@@ -2,6 +2,8 @@ import aiohttp
 from config import SERVER_URL
 from datetime import date
 import datetime
+from utils.currency_codes import CURRENCY_NAMES
+
 
 async def date_range(start, end):
     delta = end - start  # as timedelta
@@ -9,10 +11,7 @@ async def date_range(start, end):
     return days
 
 
-
-
 async def get_history(hist_query: dict, chat_id):
-
     if hist_query['Period'].lower() == 'other':
         start_tokens = hist_query['date_start'].split('/')
         start_date = datetime.date(int(start_tokens[2]), int(start_tokens[1]), int(start_tokens[0]))
@@ -41,182 +40,108 @@ async def get_history(hist_query: dict, chat_id):
     elif hist_query['Type'].lower() == 'all':
         res = await all_history(start_date, end_date, chat_id)
 
-
     return res
-
-
 
 
 async def incomes_history(start_date, end_date, chat_id):
     dt_range = await date_range(start_date, end_date)
-
     async with aiohttp.ClientSession() as session:
         data = {}
         data["user_id"] = chat_id
         async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
             res = await resp.json()
-
-
     filtered_incomes = []
     for income in res:
         inc_date_tokens = income['date'].split('/')
         inc_date = datetime.date(int(inc_date_tokens[2]), int(inc_date_tokens[1]), int(inc_date_tokens[0]))
-
         if inc_date in dt_range:
             filtered_incomes.append(income)
-
     result_string = ""
-
-    for i in range(len(filtered_incomes)):
-        for j in range(len(filtered_incomes)):
-            inc = filtered_incomes[i]
-            i_tokens = inc['date'].split('/')
-            i_date = datetime.date(int(i_tokens[2]), int(i_tokens[1]), int(i_tokens[0]))
-
-            inc =  filtered_incomes[j]
-            j_tokens = inc['date'].split('/')
-            j_date = datetime.date(int(j_tokens[2]), int(j_tokens[1]), int(j_tokens[0]))
-
-            if i_date < j_date:
-                temp = filtered_incomes[i]
-                filtered_incomes[i] = filtered_incomes[j]
-                filtered_incomes[j] = temp
-
+    filtered_incomes.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
+                                                      int(x['date'].split('/')[0])))
     for income in filtered_incomes:
         print(income)
-        result_string+= income['date'] + " - " + str(income['sum']) + " " + str(income['currency']) + " (" + income['name'] + ")" + '\n'
-
-    return result_string
-
-
-
-
-
-
+        result_string += income['date'] + " - " + str(income['sum']) + " " + CURRENCY_NAMES[
+            str(income['currency'])] + " (" + income['name'] + ")" + '\n'
+    return result_string == "" and "No incomes for this period" or result_string
 
 
 async def outcomes_history(start_date, end_date, chat_id):
-    pass
+    dt_range = await date_range(start_date, end_date)
+    async with aiohttp.ClientSession() as session:
+        data = {}
+        data["user_id"] = chat_id
+        async with session.get(f'{SERVER_URL}/outcomes', json=data) as resp:
+            res = await resp.json()
+    filtered_outcomes = []
+    for outcome in res:
+        out_date_tokens = outcome['date'].split('/')
+        out_date = datetime.date(int(out_date_tokens[2]), int(out_date_tokens[1]), int(out_date_tokens[0]))
+        if out_date in dt_range:
+            filtered_outcomes.append(outcome)
+    result_string = ""
+    filtered_outcomes.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
+                                                       int(x['date'].split('/')[0])))
+    for outcome in filtered_outcomes:
+        print(outcome)
+        result_string += outcome['date'] + " - " + str(outcome['sum']) + " " + CURRENCY_NAMES[
+            str(outcome['currency'])] + " (" + outcome['category'] + ")" + '\n'
+    return result_string == "" and "No outcomes for this period" or result_string
 
 
+async def outcomes_history(start_date, end_date, chat_id):
+    dt_range = await date_range(start_date, end_date)
+    async with aiohttp.ClientSession() as session:
+        data = {}
+        data["user_id"] = chat_id
+        async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
+            res = await resp.json()
+    filtered_incomes = []
+    for income in res:
+        inc_date_tokens = income['date'].split('/')
+        inc_date = datetime.date(int(inc_date_tokens[2]), int(inc_date_tokens[1]), int(inc_date_tokens[0]))
+        if inc_date in dt_range:
+            filtered_incomes.append(income)
+    result_string = ""
+    filtered_incomes.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
+                                                      int(x['date'].split('/')[0])))
+    for income in filtered_incomes:
+        print(income)
+        result_string += income['date'] + " - " + str(income['sum']) + " " + CURRENCY_NAMES[
+            str(income['currency'])] + " (" + income['name'] + ")" + '\n'
+    return result_string == "" and "No incomes for this period" or result_string
 
 
 async def all_history(start_date, end_date, chat_id):
-    pass
+    dt_range = await date_range(start_date, end_date)
+    async with aiohttp.ClientSession() as session:
+        data = {}
+        data["user_id"] = chat_id
+        async with session.get(f'{SERVER_URL}/outcomes', json=data) as resp:
+            outcomes = await resp.json()
+        async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
+            incomes = await resp.json()
 
+    outcomes.extend(incomes)
+    all_comes = outcomes
+    filtered_items = []
+    for it in all_comes:
+        date_tokens = it['date'].split('/')
+        all_date = datetime.date(int(date_tokens[2]), int(date_tokens[1]), int(date_tokens[0]))
+        if all_date in dt_range:
+            filtered_items.append(it)
+    result_string = ""
+    filtered_items.sort(key=lambda x: datetime.date(int(x['date'].split('/')[2]), int(x['date'].split('/')[1]),
+                                                       int(x['date'].split('/')[0])))
+    for it in filtered_items:
+        print(it)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#     delta = datetime.timedelta(days=1)
-#     if hist_query['Period'].lower() == 'day':
-#         delta = datetime.timedelta(days=1)
-#     elif hist_query['Period'].lower() == 'week':
-#         delta = datetime.timedelta(weeks=1)
-#     elif hist_query['Period'].lower() == 'month':
-#
-#         today = date.today()
-#         year = today.month == 1 and today.year - 1 or today.year
-#         month = today.month == 1 and 12 or today.month-1
-#         # day =
-#
-#         start = datetime.datetime(today.month == 1 and today.year - 1 or today.year, today.month == 1 and 12 or today.month-1, )
-#
-#
-#
-#         delta = datetime.da
-#     elif hist_query['Yaer'].lower() == 'year':
-#         days_num = 364
-#
-#     if hist_query['Type'].lower() == 'incomes':
-#         await incomes_history(period=days_num, chat_id=chat_id)
-#     elif hist_query['Type'].lower() == 'outcomes':
-#         await outcomes_history(period=days_num, chat_id=chat_id)
-#     elif hist_query['Type'].lower() == 'all':
-#         await all_history(period=days_num, chat_id=chat_id)
-#
-#
-# async def incomes_history(period: int, chat_id):
-#     async with aiohttp.ClientSession() as session:
-#         data = {}
-#         data["user_id"] = chat_id
-#         async with session.get(f'{SERVER_URL}/incomes', json=data) as resp:
-#             res = await resp.json()
-#
-#         today = date.today().strftime("%d/%m/%Y").split('/')
-#         days = int(today[0]) + int(int(today[1])*30.5) + int(today[2])*364
-#
-#         filtered_incomes = []
-#         for income in res:
-#             income_tokens = income['date'].split('/')
-#             income_days = int(income_tokens[0]) + int(int(income_tokens[1])*30.5) + int(income_tokens[2])*364
-#             if (income_days) < days and (income_days > days - period):
-#                 filtered_incomes.append(income)
-#
-#
-#
-#         sorted_incomes = sorted(filtered_incomes, key=lambda x: get_date(x), reverse=True)
-#         print(sorted_incomes)
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# async def outcomes_history(period: int, chat_id):
-#     pass
-#
-#
-# async def all_history(period: int, chat_id):
-#     pass
-#
-#
-#
-#
-#
-#
-#
-# def get_date(income):
-#     inc_tokens = income['date'].split('/')
-#     inc = datetime.datetime(int(inc_tokens[2]), int(inc_tokens[1]), int(inc_tokens[0]))
-#     return inc
-#
-#
-#
-
+        if 'category' in it:
+            result_string += "EXPENSE.  " + it['date'] + " - " + str(it['sum']) + " " + CURRENCY_NAMES[
+            str(it['currency'])] + " (" + it['category'] + ")" + '\n'
+        else:
+            result_string += "INCOME.  " + it['date'] + " - " + str(it['sum']) + " " + CURRENCY_NAMES[
+                str(it['currency'])] + " (" + it['name'] + ")" + '\n'
+    return result_string == "" and "No transactions for this period" or result_string
 
 
